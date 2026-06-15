@@ -121,6 +121,25 @@ class Encoder(nn.Module):
         x = self.residual_connections[1](x, lambda x: self.ffn(x))
         return x
 
-class ViT(nn.Module):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class ViT_Block(nn.Module):
+    def __init__(self, embed, layers, encoder, d_model, num_classes, dropout, **kwargs):
+        super().__init__(**kwargs)
+        self.embed = embed
+        self.encoders = encoder
+        self.d_model = d_model
+        self.layers = layers
+        
+        self.layernorm = LayerNorm(d_model)
+        self.classifier = nn.Linear(d_model, num_classes)
+        self.dropout = nn.Dropout(dropout)
+    
+    def forward(self, x):
+        x = self.dropout(self.embed(x))
+        for encoder in self.encoders:
+            x = encoder(x)
+        
+        x = self.layernorm(x)
+        x = x[:,0,:]
+        x = self.classifier(x)
+        return x
+
