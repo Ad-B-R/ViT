@@ -122,12 +122,11 @@ class Encoder(nn.Module):
         return x
 
 class ViT_Block(nn.Module):
-    def __init__(self, embed, layers, encoder, d_model, num_classes, dropout, **kwargs):
+    def __init__(self, embed, encoder, d_model, num_classes, dropout, **kwargs):
         super().__init__(**kwargs)
         self.embed = embed
         self.encoders = encoder
         self.d_model = d_model
-        self.layers = layers
         
         self.layernorm = LayerNorm(d_model)
         self.classifier = nn.Linear(d_model, num_classes)
